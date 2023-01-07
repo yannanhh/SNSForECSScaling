@@ -1,7 +1,7 @@
 from aws_cdk import (
-    # Duration,
     Stack,
-    # aws_sqs as sqs,
+    aws_sns as sns,
+    aws_iam as iam
 )
 from constructs import Construct
 
@@ -10,10 +10,16 @@ class SnsStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
-        # The code that defines your stack goes here
+        topic = sns.Topic(
+            self,
+            "SnsTopic",
+            display_name="ScaleECSTopic",
+        )
 
-        # example resource
-        # queue = sqs.Queue(
-        #     self, "SnsQueue",
-        #     visibility_timeout=Duration.seconds(300),
-        # )
+        topic.add_to_resource_policy(
+            iam.PolicyStatement(
+                principals=[iam.AccountPrincipal("425039140189")],
+                actions=["SNS:Subscribe"],
+                resources=["*"]
+            )
+        )
